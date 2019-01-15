@@ -1,0 +1,36 @@
+---
+- hosts: masters
+  vars:
+    #Directory that will be backed up on each master
+    source_backup_dir: /etc/origin/master
+
+    #Prefix of the generated tar.gz file
+    tar_file_prefix: certs-and-keys
+
+    #Temporary location where the tar file will be created.  This file will be removed.
+    dest_backup_dir: /tmp
+
+    #Location (on the Ansible host) where the tar will be copied.
+    #This parameter should be updated to use a location that's backed up on the host.
+    host_dest_dir: /tmp/openshift-backup/
+
+  tasks:
+  - name: Backup master certs (*.crt) and key (*.key)
+    archive:
+      path:
+        - "{{ source_backup_dir }}/*.crt"
+        - "{{ source_backup_dir }}/*.key"
+      dest: "{{ dest_backup_dir }}/{{ tar_file_prefix }}-{{ inventory_hostname }}.tar.gz"
+      format: gz
+
+  - name: Copy backup tar.gz back to ansible host machine
+    fetch:
+      src: "{{ dest_backup_dir }}/{{ tar_file_prefix }}-{{ inventory_hostname }}.tar.gz"
+      dest: "{{ host_dest_dir }}"
+      flat: yes
+
+  - name: Remove temp tar.gz file from master
+    file:
+      path: "{{ dest_backup_dir }}/{{ tar_file_prefix }}-{{ inventory_hostname }}.tar.gz"
+      state: absent
+      recurse: no
