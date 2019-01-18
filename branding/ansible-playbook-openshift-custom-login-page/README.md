@@ -35,13 +35,6 @@ If you want to use different vars from default one, you should specify them with
 Example Execute Commands
 -----------------------
 
-- **Download roles**
-~~~
-cd openshift-toolkit/ansible-playbook-openshift-custom-login-page
-
-ansible-galaxy install -f -r requirements.yaml -p ./roles
-~~~
-
 - **Use default logo**
 
 *Options:*
@@ -49,7 +42,7 @@ ansible-galaxy install -f -r requirements.yaml -p ./roles
   - If you want to use your own image, please add `-e input_img=/path/to/logo.png`
 
 ~~~
-ansible-playbook -i /path/to/hosts ./playbook.yaml                           
+ansible-playbook -i /path/to/hosts ./playbook.yaml
 ~~~
 
 - **Use your own logo**
@@ -64,36 +57,11 @@ git clone https://github.com/redhat-cop/openshift-toolkit.git
 
 cd openshift-toolkit/ansible-playbook-openshift-custom-login-page
 
-ansible-galaxy install -f -r requirements.yaml -p ./roles
-
 wget https://i.ytimg.com/vi/iai4v0ocX3w/maxresdefault.jpg -O ./superman.jpg
 
 ansible-playbook -i ./hosts ./playbook.yaml -e input_img=./superman.jpg
 
 ```
-
-Sample Hosts file
-------------------
-
-```
-[masters]
-master1.example.com
-
-[etcd]
-master1.example.com
-
-[nodes]
-master1.example.com openshift_node_labels="{'region': 'mgmt', 'role': 'master'}"
-node1.example.com   openshift_node_labels="{'region': 'infra', 'role': 'app', 'zone': 'default'}"
-node2.example.com   openshift_node_labels="{'region': 'infra', 'role': 'app', 'zone': 'default'}"
-```
-
-Tip commands
--------------
-Copy ssh key to all nodes
-~~~
-for node in $(cat ./hosts|grep -v '\['|awk '{print $1}'|grep -v '^$'|uniq); do ssh-copy-id -i ~/.ssh/id_rsa.pub  $node; done
-~~~
 
 Video Clip
 ----------

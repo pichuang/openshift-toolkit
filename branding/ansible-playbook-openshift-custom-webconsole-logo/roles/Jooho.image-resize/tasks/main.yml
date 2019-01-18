@@ -1,0 +1,54 @@
+---
+# tasks file for ansible-role-image-resize
+
+  - name: Install ImageMagick package
+    yum: name=ImageMagick state=present
+    register: installed_imagemagick
+    become: yes
+  
+
+  - name: Add use_default_img=false if new image is specified.
+    set_fact: 
+       use_default_img: false
+    when: input_img != 'sample-openshift-ori.png'
+
+  - name: Copy sample image if new image is not specified.
+    copy: src=sample-openshift-ori.png dest={{temp_dir}}
+    when: use_default_img
+
+  - name: Copy source image to target vm
+    synchronize: src={{input_img}} dest={{temp_dir}}/{{input_img |basename}}
+    when: not use_default_img
+    become: yes
+
+  - name: Set image path
+    block: 
+       - name: Source image path
+         set_fact:
+             input_img_file: "{{temp_dir}}/{{input_img |basename}}"
+        
+       - name: Source image path
+         set_fact:
+             output_img: "{{temp_dir}}/resized_{{input_img |basename}}"
+    run_once: yes
+
+  - name: Check if the input_img exist
+    stat: "path={{input_img_file}}"
+    register: stat_input_img_exist
+
+  - name: if the input_img does not exit,it fail
+    fail: msg="Input Image does not exist, please check it"
+    when: stat_input_img_exist.stat.exists == false
+
+  - name: Check if the output_img exist
+    stat: "path={{output_img}}"
+    register: stat_output_img_exist
+
+  - name: Resize image with specific size
+    command: "convert {{input_img_file}} -resize {{size}} {{output_img}}"
+    when: "stat_output_img_exist.stat.exists == false or overwrite_force"
+
+  - name: Change permissions the output image
+    file: "path={{output_img}} mode=0777"
+
+

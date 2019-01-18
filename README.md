@@ -18,6 +18,6 @@ The target version is v3.11
 * [ ] [Sample Install Inventories](./install/)
 
 ## Ansible Playbooks
-* [ ] [Create Openshift Custom Login Page with New Logo](./branding/ansible-playbook-openshift-custom-login-page/)
-* [ ] [Change Openshift Webconsole Logo](./branding/ansible-playbook-openshift-custom-webconsole-logo/)
+* [x] [Create Openshift Custom Login Page with New Logo](./branding/ansible-playbook-openshift-custom-login-page/)
+* [x] [Change Openshift Webconsole Logo](./branding/ansible-playbook-openshift-custom-webconsole-logo/)
 
